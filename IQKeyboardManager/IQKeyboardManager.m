@@ -380,6 +380,8 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
     return enable;
 }
 
+/// xxxxx
+
 //	Setting keyboard distance from text field.
 -(void)setKeyboardDistanceFromTextField:(CGFloat)keyboardDistanceFromTextField
 {
