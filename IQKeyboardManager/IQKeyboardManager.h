@@ -56,6 +56,8 @@ extern NSInteger const kIQDoneButtonToolbarTag;
  */
 extern NSInteger const kIQPreviousNextButtonToolbarTag;
 
+/// 忽略点击收起键盘的视图tag
+extern NSInteger const kIQIgnoreTag;
 
 
 /**
@@ -89,7 +91,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
  */
 - (void)reloadLayoutIfNeeded;
 
-/** 
+/**
  Boolean to know if keyboard is showing.
  */
 @property(nonatomic, assign, readonly, getter = isKeyboardShowing) BOOL  keyboardShowing;

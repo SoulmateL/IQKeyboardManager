@@ -37,6 +37,7 @@
 
 NSInteger const kIQDoneButtonToolbarTag             =   -1002;
 NSInteger const kIQPreviousNextButtonToolbarTag     =   -1005;
+NSInteger const kIQIgnoreTag = -0x12345;
 
 #define kIQCGPointInvalid CGPointMake(CGFLOAT_MAX, CGFLOAT_MAX)
 
@@ -127,7 +128,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 @implementation IQKeyboardManager
 {
-	@package
+    @package
 
     /*******************************************/
     
@@ -178,7 +179,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 /*  Singleton Object Initialization. */
 -(instancetype)init
 {
-	if (self = [super init])
+    if (self = [super init])
     {
         __weak __typeof__(self) weakSelf = self;
         
@@ -202,7 +203,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
             strongSelf.animationDuration = 0.25;
             strongSelf.animationCurve = UIViewAnimationCurveEaseInOut;
             [strongSelf setEnable:YES];
-			[strongSelf setKeyboardDistanceFromTextField:10.0];
+            [strongSelf setKeyboardDistanceFromTextField:10.0];
             [strongSelf setShouldPlayInputClicks:YES];
             [strongSelf setShouldResignOnTouchOutside:NO];
             [strongSelf setOverrideKeyboardAppearance:NO];
@@ -242,67 +243,67 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 /*  Automatically called from the `+(void)load` method. */
 + (IQKeyboardManager*)sharedManager
 {
-	//Singleton instance
-	static IQKeyboardManager *kbManager;
-	
-	static dispatch_once_t onceToken;
+    //Singleton instance
+    static IQKeyboardManager *kbManager;
+    
+    static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
         kbManager = [[self alloc] init];
     });
-	
-	return kbManager;
+    
+    return kbManager;
 }
 
 #pragma mark - Dealloc
 -(void)dealloc
 {
     //  Disable the keyboard manager.
-	[self setEnable:NO];
+    [self setEnable:NO];
     
     //Removing notification observers on dealloc.
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Property functions
 -(void)setEnable:(BOOL)enable
 {
-	// If not enabled, enable it.
+    // If not enabled, enable it.
     if (enable == YES &&
         _enable == NO)
     {
-		//Setting YES to _enable.
-		_enable = enable;
+        //Setting YES to _enable.
+        _enable = enable;
         
-		//If keyboard is currently showing. Sending a fake notification for keyboardWillShow to adjust view according to keyboard.
-		if (_kbShowNotification)	[self keyboardWillShow:_kbShowNotification];
+        //If keyboard is currently showing. Sending a fake notification for keyboardWillShow to adjust view according to keyboard.
+        if (_kbShowNotification)    [self keyboardWillShow:_kbShowNotification];
 
         [self showLog:@"Enabled"];
     }
-	//If not disable, disable it.
+    //If not disable, disable it.
     else if (enable == NO &&
              _enable == YES)
     {
-		//Sending a fake notification for keyboardWillHide to retain view's original position.
-		[self keyboardWillHide:nil];
+        //Sending a fake notification for keyboardWillHide to retain view's original position.
+        [self keyboardWillHide:nil];
         
-		//Setting NO to _enable.
-		_enable = enable;
-		
+        //Setting NO to _enable.
+        _enable = enable;
+        
         [self showLog:@"Disabled"];
     }
-	//If already disabled.
-	else if (enable == NO &&
+    //If already disabled.
+    else if (enable == NO &&
              _enable == NO)
-	{
+    {
         [self showLog:@"Already Disabled"];
-	}
-	//If already enabled.
-	else if (enable == YES &&
+    }
+    //If already enabled.
+    else if (enable == YES &&
              _enable == YES)
-	{
+    {
         [self showLog:@"Already Enabled"];
-	}
+    }
 }
 
 -(BOOL)privateIsEnabled
@@ -382,11 +383,11 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 
 /// xxxxx
 
-//	Setting keyboard distance from text field.
+//    Setting keyboard distance from text field.
 -(void)setKeyboardDistanceFromTextField:(CGFloat)keyboardDistanceFromTextField
 {
     //Can't be less than zero. Minimum is zero.
-	_keyboardDistanceFromTextField = MAX(keyboardDistanceFromTextField, 0);
+    _keyboardDistanceFromTextField = MAX(keyboardDistanceFromTextField, 0);
 
     [self showLog:[NSString stringWithFormat:@"keyboardDistanceFromTextField: %.2f",_keyboardDistanceFromTextField]];
 }
@@ -1054,7 +1055,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
                     //Now if expectedOffsetY (superScrollView.contentOffset.y + expectedFixDistance) is lower than current suggestedOffsetY, which means we're in a position where navigationBar up and hide, then reducing suggestedOffsetY with expectedOffsetY (superScrollView.contentOffset.y + expectedFixDistance)
                     suggestedOffsetY = MIN(suggestedOffsetY, superScrollView.contentOffset.y + expectedFixDistance);
                     
-                    //Setting move to 0 because now we don't want to move any view anymore (All will be managed by our contentInset logic. 
+                    //Setting move to 0 because now we don't want to move any view anymore (All will be managed by our contentInset logic.
                     moveUp = 0;
                 }
                 else
@@ -1370,7 +1371,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 -(void)keyboardWillShow:(NSNotification*)aNotification
 {
     _kbShowNotification = aNotification;
-	
+    
     //  Boolean to know keyboard is showing/hiding
     _keyboardShowing = YES;
     
@@ -1405,7 +1406,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
         _topViewBeginSafeAreaInsets = UIEdgeInsetsZero;
         return;
     }
-	
+    
     CFTimeInterval startTime = CACurrentMediaTime();
     [self showLog:[NSString stringWithFormat:@">>>>> %@ started >>>>>",NSStringFromSelector(_cmd)] indentation:1];
 
@@ -1454,7 +1455,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 - (void)keyboardWillHide:(NSNotification*)aNotification
 {
     //If it's not a fake notification generated by [self setEnable:NO].
-    if (aNotification)	_kbShowNotification = nil;
+    if (aNotification)    _kbShowNotification = nil;
     
     //  Boolean to know keyboard is showing/hiding
     _keyboardShowing = NO;
@@ -1471,7 +1472,7 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
     }
     
     //If not enabled then do nothing.
-    if ([self privateIsEnabled] == NO)	return;
+    if ([self privateIsEnabled] == NO)    return;
     
     CFTimeInterval startTime = CACurrentMediaTime();
     [self showLog:[NSString stringWithFormat:@">>>>> %@ started >>>>>",NSStringFromSelector(_cmd)] indentation:1];
@@ -1631,8 +1632,8 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
         }
     }
     
-	//If autoToolbar enable, then add toolbar on all the UITextField/UITextView's if required.
-	if ([self privateIsEnableAutoToolbar])
+    //If autoToolbar enable, then add toolbar on all the UITextField/UITextView's if required.
+    if ([self privateIsEnableAutoToolbar])
     {
         [self addToolbarIfRequired];
     }
@@ -1861,6 +1862,11 @@ NS_EXTENSION_UNAVAILABLE_IOS("Unavailable in extension")
 /** To not detect touch events in a subclass of UIControl, these may have added their own selector for specific work */
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
+    
+    if ([touch view].tag == kIQIgnoreTag) {
+        return NO;
+    }
+    
     //  Should not recognize gesture if the clicked view is either UIControl or UINavigationBar(<Back button etc...)    (Bug ID: #145)
     for (Class aClass in self.touchResignedGestureIgnoreClasses)
     {
